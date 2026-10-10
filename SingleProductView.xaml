@@ -1,0 +1,127 @@
+﻿<UserControl x:Class="Lab3.SingleProductView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Lab3"
+             mc:Ignorable="d"
+             d:DesignHeight="150" d:DesignWidth="800">
+    <Border BorderBrush="Black" BorderThickness="2" CornerRadius="3"
+            Margin="0,0,0,10" Padding="4">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="White"/>
+                <Style.Triggers>
+                    <!-- скидка больше 20% -> подсветка всей строки #C8A2C8 -->
+                    <DataTrigger Binding="{Binding HasBigDiscount}" Value="True">
+                        <Setter Property="Background" Value="#C8A2C8"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="55*"/>
+                <ColumnDefinition Width="20*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ЗОНА 1: ФОТО -->
+            <Border Grid.Column="0" Margin="3"
+                    BorderBrush="Black" BorderThickness="2" Padding="6">
+                <TextBlock Text="Фото" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" FontSize="14"/>
+            </Border>
+
+            <!-- ЗОНА 2: ТЕКСТ -->
+            <Border Grid.Column="1" Margin="4,3,2,3" BorderBrush="Black" BorderThickness="1" Padding="12,8">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="16" FontWeight="Bold" Foreground="Black"
+                               TextTrimming="CharacterEllipsis">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} | {1}">
+                                <Binding Path="Category.Name"/>
+                                <Binding Path="Name"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock Text="{Binding Article, StringFormat='Артикул: {0}'}"
+                               FontSize="13" Foreground="Gray" Margin="0,4,0,0"
+                               TextTrimming="CharacterEllipsis"/>
+
+                    <TextBlock Text="{Binding Description, StringFormat='Описание товара: {0}'}"
+                               FontSize="13" Foreground="Gray" Margin="0,4,0,0"
+                               TextTrimming="CharacterEllipsis"/>
+
+                    <TextBlock FontSize="13" Margin="0,4,0,0">
+                        <Run Text="Производитель: " Foreground="Gray"/>
+                        <Run Text="{Binding Manufacturer.Name}" Foreground="Black"/>
+                    </TextBlock>
+
+                    <TextBlock FontSize="13" Margin="0,4,0,0">
+                        <Run Text="Поставщик: " Foreground="Gray"/>
+                        <Run Text="{Binding Supplier.Name}" Foreground="Black"/>
+                    </TextBlock>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <TextBlock Text="Цена: " Foreground="Gray" FontSize="13"/>
+                        <!-- обычная цена, когда скидки нет -->
+                        <TextBlock Text="{Binding Price}" Foreground="Black" FontSize="13">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <!-- старая (зачёркнутая) цена при скидке -->
+                        <TextBlock Name="OriginalPrice" Text="{Binding Price}" Foreground="Red"
+                                   TextDecorations="Strikethrough" FontSize="13">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <!-- итоговая цена при скидке -->
+                        <TextBlock Name="DiscountPrice" Text="{Binding FinalPrice}" Foreground="Black"
+                                   Margin="5,0,0,0" FontSize="13">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding Unit, StringFormat='Единица измерения: {0}'}"
+                               FontSize="13" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding Count, StringFormat='Количество на складе: {0}'}"
+                               FontSize="13" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ЗОНА 3: СКИДКА -->
+            <Border Grid.Column="2" Margin="0,7,2,7" BorderBrush="Black" BorderThickness="2" Padding="6"
+                    Background="Transparent">
+                <TextBlock Text="{Binding CurrentDiscount}" FontSize="13" TextWrapping="Wrap"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>
